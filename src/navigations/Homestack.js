@@ -8,8 +8,9 @@ const Stack = createStackNavigator()
 export default function Homestack() {
   return (
     <Stack.Navigator initialRouteName="Home" >
+
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}  />
-        <Stack.Screen name="Products" component={Products} options={{ headerShown: false }}  />
+        <Stack.Screen name="Products" component={Products}   />
         
     </Stack.Navigator>
   )

@@ -1,18 +1,20 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Ensure correct Icon library
+import { useNavigation } from '@react-navigation/native';
 
-export default function ItemHome({title,imageUrl}) {
+export default function ItemHome({title,imageUrl,navigation}) {
+
   return (
     <View style={styles.container}>
       {/* Background Image */}
-      <Image source={{ uri : imageUrl }} style={styles.image} />
+      <Image source={imageUrl} style={styles.image} />
 
       {/* Overlay Text */}
       <Text style={styles.text}>{title}</Text>
 
       {/* Explore Button */}
-      <TouchableOpacity style={styles.btn}>
+      <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate('Products', {params : {title}})}>
         <Text style={styles.btnText}>Khám phá</Text>
         <Icon name="arrow-right" size={20} color="white" style={styles.icon} />
       </TouchableOpacity>
@@ -23,7 +25,7 @@ export default function ItemHome({title,imageUrl}) {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 300, // Adjust height as needed
+    height: '100%', // Adjust height as needed
     position: 'relative', // Parent for absolute positioning
     overflow: 'hidden',
     borderRadius: 10, // Optional for rounded corners
@@ -37,7 +39,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 20,
     left: 20,
-    color: 'white',
+    color: 'rgba(225, 199, 141, 1)',
     fontSize: 24,
     fontWeight: 'bold',
     textShadowColor: 'rgba(0, 0, 0, 0.8)',
@@ -58,6 +60,7 @@ const styles = StyleSheet.create({
   btnText: {
     color: 'white',
     fontSize: 16,
+    fontWeight: 'bold',
     marginRight: 10,
   },
   icon: {
