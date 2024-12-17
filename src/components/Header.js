@@ -1,17 +1,36 @@
-import { View, Text ,StyleSheet, Image} from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet, Image } from "react-native";
+import React from "react";
 
 export default function Header() {
   return (
     <View style={styles.container}>
-        <View style={header}>
-            <Image source={require('../assets/logo.png')} style={styles.logo}/>
-
-        </View>
+      <View style={styles.header}>
+        <Image
+          source={require("../assets/images/icon.png")}
+          style={styles.logo}
+        />
+      </View>
     </View>
-  )
+  );
 }
 const styles = StyleSheet.create({
-
-    
-})
+  container: {
+    display: "flex",
+    flex: 1,
+  },
+  header: {
+    width: "100%",
+    height: 100,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 20,
+    backgroundColor: "#901D00",
+  },
+  logo: {
+    width: 50,
+    height: 50,
+    resizeMode: "contain",
+    borderRadius: 25,
+  },
+});
