@@ -97,7 +97,9 @@ export default function Login({ navigation }) {
         entering={FadeInDown.delay(1000).duration(1000).springify()}
         style={styles.buttonLogin}
       >
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("BottomNavigator")}
+        >
           <Text style={styles.buttonText}>Đăng nhập</Text>
         </TouchableOpacity>
       </Animated.View>

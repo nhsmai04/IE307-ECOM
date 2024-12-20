@@ -1,6 +1,6 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import BottomNavigator from "./BottamNavigator";
+import BottomNavigator from "./BottomNavigator";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 

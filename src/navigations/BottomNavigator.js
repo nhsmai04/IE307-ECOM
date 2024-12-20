@@ -1,3 +1,4 @@
+import { View, Text } from "react-native";
 import React from "react";
 import Icon from "react-native-vector-icons/Ionicons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -22,7 +23,11 @@ export default function BottomNavigator() {
         },
       })}
     >
-      <Tab.Screen name="Home" component={Homestack} />
+      <Tab.Screen
+        name="Home"
+        component={Homestack}
+        options={{ headerShown: false }}
+      />
       <Tab.Screen name="Shop" component={Shopstack} />
       <Tab.Screen name="Profile" component={Profilestack} />
     </Tab.Navigator>
