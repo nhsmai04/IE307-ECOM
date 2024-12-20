@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import { getProducts } from "../api/firebase"; // Giả sử bạn lưu hàm getProducts ở file firebase.js
 import Icon from "react-native-vector-icons/FontAwesome";
+import images from "../assets/images/imageMap";
+
 export default function Products({ navigation }) {
   const [data, setData] = useState([]);
 
@@ -22,6 +24,10 @@ export default function Products({ navigation }) {
 
     fetchData();
   }, []);
+
+  const getImage = (imageName) => {
+    return images[imageName];
+  };
 
   return (
     <View style={styles.container}>
@@ -41,12 +47,7 @@ export default function Products({ navigation }) {
           >
             <View style={styles.item}>
               <View style={styles.imageContainer}>
-                <Image
-                  source={{
-                    uri: "https://xingfutangvietnam.com/wp-content/uploads/2021/06/tra-sua-tran-chau-e1685431912430.png",
-                  }}
-                  style={styles.image}
-                />
+                <Image source={getImage(item.image)} style={styles.image} />
               </View>
               <View style={styles.info}>
                 <Text style={styles.name} numberOfLines={1}>
@@ -76,12 +77,7 @@ export default function Products({ navigation }) {
           >
             <View style={styles.item}>
               <View style={styles.imageContainer}>
-                <Image
-                  source={{
-                    uri: "https://xingfutangvietnam.com/wp-content/uploads/2021/06/tra-sua-tran-chau-e1685431912430.png",
-                  }}
-                  style={styles.image}
-                />
+                <Image source={getImage(item.image)} style={styles.image} />
               </View>
               <View style={styles.info}>
                 <Text style={styles.name} numberOfLines={1}>
@@ -156,7 +152,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   image: {
-    aspectRatio: 1,
+    width: "100%",
+    height: "100%",
     resizeMode: "cover",
   },
   info: {

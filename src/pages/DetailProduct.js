@@ -11,12 +11,15 @@ import {
 import React, { useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useRoute } from "@react-navigation/native";
+import images from "../assets/images/imageMap";
 export default function DetailProduct({ navigation }) {
   const route = useRoute();
   const { item } = route.params;
 
   const [modalVisible, setModalVisible] = useState(false);
-
+  const getImage = (imageName) => {
+    return images[imageName];
+  };
   return (
     <View style={styles.container}>
       <View style={styles.upperRow}>
@@ -27,16 +30,11 @@ export default function DetailProduct({ navigation }) {
           <Icon name="heart" size={24} color="#000" />
         </TouchableOpacity>
       </View>
-      <Image
-        source={{
-          uri: "https://xingfutangvietnam.com/wp-content/uploads/2021/06/tra-sua-tran-chau-e1685431912430.png",
-        }}
-        style={styles.image}
-      />
+      <Image source={getImage(item.image)} style={styles.image} />
       <View style={styles.details}>
         <View style={styles.titleRow}>
           <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.price}> 3000{item.price}đ</Text>
+          <Text style={styles.price}> {item.price}đ</Text>
         </View>
 
         <View style={styles.ratingRow}>
@@ -135,7 +133,8 @@ const styles = StyleSheet.create({
     width: 370,
   },
   image: {
-    aspectRatio: 1,
+    width: "100%",
+    height: "50%",
     resizeMode: "cover",
     backgroundColor: "#E1CA90",
     borderBottomLeftRadius: 40,
