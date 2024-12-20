@@ -5,21 +5,78 @@ import {
   TouchableOpacity,
   Image,
   Modal,
-  TouchableWithoutFeedback,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useRoute } from "@react-navigation/native";
 import images from "../assets/images/imageMap";
+import  {useApp}  from "../contexts/AppContext";
 export default function DetailProduct({ navigation }) {
   const route = useRoute();
+  const {addToCart} = useApp();
   const { item } = route.params;
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [detailsVisible, setDetailsVisible] = useState(false);
+  const [selectedSize, setSelectedSize] = useState("L");
+  const [selectedIce, setSelectedIce] = useState("Ít đá");
+  const [selectedSweetness, setSelectedSweetness] = useState("Bình thường");
+  const [selectedToppings, setSelectedToppings] = useState([]);
+  const [total, setTotal] = useState(0);
+
+
+  const AddItemtoCart = () =>{
+    const cartItem  = {
+      id: item.id,
+      name: item.name,  
+      image: item.image,
+      price: item.price,
+      size: selectedSize,
+      ice: selectedIce,
+      sweetness: selectedSweetness,
+      toppings: selectedToppings,
+      total: total,
+    }
+    addToCart(cartItem);
+    
+  }
+
   const getImage = (imageName) => {
     return images[imageName];
   };
+
+  const toggleTopping = (topping) => {
+    setSelectedToppings((prev) => {
+      const existingToppingIndex = prev.findIndex(
+        (item) => item.nametopping === topping.nametopping
+      );
+      if (existingToppingIndex > -1) {
+        // Nếu topping đã được chọn trước đó, tăng số lượng
+        const updatedToppings = [...prev];
+        updatedToppings[existingToppingIndex].quantity += 1;
+        return updatedToppings;
+      } else {
+        // Nếu topping chưa được chọn, thêm mới vào danh sách
+        return [...prev, { ...topping, quantity: 1 }];
+      }
+    });
+  };
+
+  const removeTopping = (topping) => {
+    setSelectedToppings((prev) =>
+      prev.filter((item) => item.nametopping !== topping.nametopping)
+    );
+  };
+
+  useEffect(() => {
+    let newTotal = parseFloat(item.price);
+    selectedToppings.forEach((topping) => {
+      newTotal += parseFloat(topping.value) * topping.quantity;
+    });
+    setTotal(newTotal);
+  }, [selectedToppings]);
+
   return (
     <View style={styles.container}>
       <View style={styles.upperRow}>
@@ -34,7 +91,7 @@ export default function DetailProduct({ navigation }) {
       <View style={styles.details}>
         <View style={styles.titleRow}>
           <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.price}> {item.price}đ</Text>
+          <Text style={styles.price}>{item.price}đ</Text>
         </View>
 
         <View style={styles.ratingRow}>
@@ -49,6 +106,12 @@ export default function DetailProduct({ navigation }) {
         </View>
 
         <View style={styles.descriptionBox}>
+          <TouchableOpacity
+            style={styles.detailsBtn}
+            onPress={() => setDetailsVisible(true)}
+          >
+            <Text style={styles.detailsBtnText}>Thêm chi tiết</Text>
+          </TouchableOpacity>
           <Text style={styles.description}>Giới thiệu:</Text>
           <Text style={styles.desText}>{item.description}</Text>
         </View>
@@ -58,68 +121,150 @@ export default function DetailProduct({ navigation }) {
         <Text style={styles.btnText}>ĐẶT HÀNG</Text>
       </TouchableOpacity>
 
-      {/* Overlay Modal */}
-      <Modal
-        transparent={true}
-        visible={modalVisible}
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
+      {/* Modal for Details */}
+      <Modal transparent={true} visible={detailsVisible} animationType="slide">
         <View style={styles.modalBackground}>
-          <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-            <View style={styles.backgroundOverlay} />
-          </TouchableWithoutFeedback>
+          <TouchableOpacity
+            style={styles.backgroundOverlay}
+            onPress={() => setDetailsVisible(false)}
+          />
+          <View style={styles.modalContainerDetails}>
+            <Text style={styles.modalTitle}>Chọn chi tiết</Text>
 
-          <View style={styles.modalContainer}>
-            <View style={styles.headerContent}>
-              <View style={styles.modalTitleRow}>
-                <Text style={styles.modalTitle}>Tổng số lượt bình chọn:</Text>
-                <Text style={styles.modalTitleNumber}>7.1k</Text>
+            <ScrollView style={styles.scrollViewModal} contentContainerStyle={styles.scrollViewContent}>
+              <Text style={styles.modalSubtitle}>Kích thước</Text>
+              <View style={styles.optionsRow}>
+                {[
+                  { label: "M", value: "M" },
+                  { label: "L", value: "L" },
+                ].map((size) => (
+                  <TouchableOpacity
+                    key={size.value}
+                    style={
+                      selectedSize === size.value
+                        ? styles.optionBtnSelected
+                        : styles.optionBtn
+                    }
+                    onPress={() => setSelectedSize(size.value)}
+                  >
+                    <Text style={styles.optionText}>{size.label}</Text>
+                  </TouchableOpacity>
+                ))}
               </View>
-              <Text style={styles.modalRating}>4.9 trên 5</Text>
-              <View style={styles.starRow}>
-                <Text style={styles.starText}>Bấm để bình chọn</Text>
-                <View style={styles.starIcon}>
-                  {[1, 2, 3, 4, 5].map((index) => (
-                    <Icon name="star-o" size={30} color="rgba(0, 0, 0, 0.5)" />
-                  ))}
-                </View>
-              </View>
-            </View>
 
-            <ScrollView
-              style={styles.commentSection}
-              contentContainerStyle={{ paddingBottom: 16 }}
-              showsVerticalScrollIndicator={false}
-            >
-              {Array.from({ length: 20 }, (_, index) => (
-                <View key={index} style={styles.commentBox}>
-                  <View style={styles.commentHeader}>
-                    <Image
-                      source={{
-                        uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHylL97CjJ3JctnR5MzdMVvsJSeR5-TnVL4w&s",
-                      }}
-                      style={styles.commentAvatar}
-                    />
-                    <Text style={styles.commentUser}>Tên người dùng</Text>
+              <Text style={styles.modalSubtitle}>Chọn đá</Text>
+              <View style={styles.optionsRow}>
+                {["Bình thường", "Ít đá", "Đá riêng"].map((ice) => (
+                  <TouchableOpacity
+                    key={ice}
+                    style={
+                      selectedIce === ice
+                        ? styles.optionBtnSelected
+                        : styles.optionBtn
+                    }
+                    onPress={() => setSelectedIce(ice)}
+                  >
+                    <Text style={styles.optionText}>{ice}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={styles.modalSubtitle}>Chọn độ ngọt</Text>
+              <View style={styles.optionsRow}>
+                {["Bình thường", "70%", "50%"].map((sweetness) => (
+                  <TouchableOpacity
+                    key={sweetness}
+                    style={
+                      selectedSweetness === sweetness
+                        ? styles.optionBtnSelected
+                        : styles.optionBtn
+                    }
+                    onPress={() => setSelectedSweetness(sweetness)}
+                  >
+                    <Text style={styles.optionText}>{sweetness}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={styles.modalSubtitle}>Chọn topping</Text>
+              <Text>Topping 3k/mỗi loại</Text>
+              <View style={styles.optionsRow}>
+                {[
+                  { nametopping: "Trân châu đen", value: "3000" },
+                  { nametopping: "Thạch AIYU", value: "3000" },
+                  { nametopping: "Sương sáo", value: "3000" },
+                ].map((topping) => (
+                  <View key={topping.nametopping} style={styles.toppingContainer}>
+                    <TouchableOpacity
+                      style={
+                        selectedToppings.some((item) => item.nametopping === topping.nametopping)
+                          ? styles.optionBtnSelected
+                          : styles.optionBtn
+                      }
+                      onPress={() => toggleTopping(topping)}
+                    >
+                      <Text style={styles.optionText}>
+                        {topping.nametopping}
+                        {selectedToppings.some((item) => item.nametopping === topping.nametopping) && (
+                          <Text> x{selectedToppings.find((item) => item.nametopping === topping.nametopping).quantity}</Text>
+                        )}
+                      </Text>
+                    </TouchableOpacity>
+                    {selectedToppings.some((item) => item.nametopping === topping.nametopping) && (
+                      <TouchableOpacity onPress={() => removeTopping(topping)}>
+                        <Icon name="times" size={16} color="#000" />
+                      </TouchableOpacity>
+                    )}
                   </View>
-                  <Text style={styles.commentText}>
-                    Uống cũng tạm được, view khá là đẹp. Mỗi tội nhân viên do
-                    đông quá hay gì mà có vẻ hơi lơ là với khách khi khách hỏi
-                    hay yêu cầu gì đó
-                  </Text>
-                </View>
-              ))}
+                ))}
+              </View>
+              <Text>Topping 5k/mỗi loại</Text>
+              <View style={styles.optionsRow}>
+                {[
+                  { nametopping: "Trân châu Olong", value: "5000" },
+                  { nametopping: "Phô mai viên", value: "5000" },
+                  { nametopping: "Pudding", value: "5000" },
+                ].map((topping) => (
+                  <View key={topping.nametopping} style={styles.toppingContainer}>
+                    <TouchableOpacity
+                      style={
+                        selectedToppings.some((item) => item.nametopping === topping.nametopping)
+                          ? styles.optionBtnSelected
+                          : styles.optionBtn
+                      }
+                      onPress={() => toggleTopping(topping)}
+                    >
+                      <Text style={styles.optionText}>
+                        {topping.nametopping}
+                        {selectedToppings.some((item) => item.nametopping === topping.nametopping) && (
+                          <Text> x{selectedToppings.find((item) => item.nametopping === topping.nametopping).quantity}</Text>
+                        )}
+                      </Text>
+                    </TouchableOpacity>
+                    {selectedToppings.some((item) => item.nametopping === topping.nametopping) && (
+                      <TouchableOpacity onPress={() => removeTopping(topping)}>
+                        <Icon name="times" size={16} color="#000" />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+              </View>
+              <Text style={styles.totalPrice}>Tổng tiền: {total} VND</Text>
             </ScrollView>
+            <TouchableOpacity style={styles.orderBtnModal} onPress={() => AddItemtoCart()}>
+              <Text style={styles.btnText}>ĐẶT HÀNG</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
   },
   upperRow: {
     flexDirection: "row",
@@ -181,6 +326,17 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     paddingBottom: 5,
   },
+  detailsBtn: {
+    marginVertical: 8,
+    padding: 10,
+    backgroundColor: '#D8BB7A',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  detailsBtnText: {
+    color: '#fff',
+    fontSize: 16,
+  },
   descriptionBox: {
     top: 50,
     marginLeft: 20,
@@ -210,6 +366,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 20,
   },
+  orderBtnModal: {
+    backgroundColor: "#58ACD6",
+    width: "100%",
+    height: 60,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    bottom: 0,
+    marginBottom: 20,
+  },
   btnText: {
     fontSize: 20,
     color: "#fff",
@@ -225,6 +392,8 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     height: "60%",
+    display:'flex',
+    justifyContent:"flex-end",
     backgroundColor: "#fff",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -275,31 +444,122 @@ const styles = StyleSheet.create({
   },
   commentSection: {
     flex: 1,
+    marginTop: 16,
   },
   commentBox: {
     marginBottom: 16,
-    padding: 8,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 16,
+    padding: 16,
+    backgroundColor: "#f8f8f8",
+    borderRadius: 8,
   },
   commentHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 8,
   },
   commentAvatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 30,
-    marginRight: 14,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 8,
   },
   commentUser: {
-    fontWeight: "bold",
     fontSize: 16,
+    fontWeight: "bold",
   },
   commentText: {
     fontSize: 14,
-    textAlign: "justify",
+    color: "#333",
+  },
+  modalContent: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  closeModalText: {
+    marginTop: 20,
+    fontSize: 16,
+    color: '#901D00',
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalSubtitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 10,
+  },
+  options: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginVertical: 10,
+  },
+  optionBtn: {
+    
+    backgroundColor: '#D8BB7A',
+    borderRadius: 5,
+  },
+  optionText: {
+    color: '#fff',
+    fontSize: 16,
+    
+  },
+  modalContainerDetails: {
+    height: "80%",
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 16,
+    alignItems: "center",
+  },
+  scrollViewModal: {
+    width: "100%",
+    padding: 10,
+  },
+  scrollViewContent: {
+    paddingBottom: 80, // Đảm bảo có đủ khoảng trống để nút ĐẶT HÀNG không bị che khuất
+  },
+  modalSubtitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 20,
+  },
+  optionsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    width: "100%",
+    marginVertical: 10,
+  },
+  optionBtn: {
+    padding: 10,
+    backgroundColor: "#D8BB7A",
+    borderRadius: 5,
+    width: "48%", // Đảm bảo mỗi item chiếm 48% chiều rộng để có khoảng cách giữa các item
+    marginBottom: 10, // Khoảng cách giữa các hàng
+  },
+  optionBtnSelected: {
+    padding: 10,
+    backgroundColor: "#58ACD6",
+    borderRadius: 5,
+    width: "48%", // Đảm bảo mỗi item chiếm 48% chiều rộng để có khoảng cách giữa các item
+    marginBottom: 10, // Khoảng cách giữa các hàng
+  },
+  toppingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+
+
+    width:"50%"
+  },
+  totalPrice: {
+    marginTop: 20,
+    fontSize: 20,
     fontWeight: "bold",
   },
 });
