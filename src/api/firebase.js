@@ -2,6 +2,8 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 import { ref, get } from "firebase/database";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAc2ShExyCYd0lcNtW4cNcwTVqH_W0i9vM",
@@ -41,3 +43,32 @@ export const getProducts = async () => {
     return null;
   }
 };
+export const getProductsByType = async (type) => {
+  try {
+    // Tạo tham chiếu tới database (2/product)
+    const productsRef = ref(db, "2/product");
+
+    // Lấy toàn bộ dữ liệu sản phẩm
+    const snapshot = await get(productsRef);
+
+    if (snapshot.exists()) {
+      const allProducts = snapshot.val(); // Trả về đối tượng các sản phẩm
+      const products = Object.values(allProducts); // Chuyển thành mảng
+
+      // Lọc sản phẩm theo type
+      const filteredProducts = products.filter(
+        (product) => product.type === type
+      );
+      return filteredProducts;
+    } else {
+      console.log("Không có dữ liệu.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy dữ liệu theo type:", error);
+    return [];
+  }
+};
+
+export const FIREBASE_AUTH = getAuth(app);
+export const FIREBASE_DB = getFirestore(app);

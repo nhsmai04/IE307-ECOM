@@ -1,21 +1,20 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React from "react";
-import Icon from "react-native-vector-icons/FontAwesome"; // Ensure correct Icon library
-import { useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function ItemHome({ title, imageUrl, navigation }) {
   return (
     <View style={styles.container}>
       {/* Background Image */}
       <Image source={imageUrl} style={styles.image} />
-
       {/* Overlay Text */}
       <Text style={styles.text}>{title}</Text>
-
       {/* Explore Button */}
       <TouchableOpacity
         style={styles.btn}
-        onPress={() => navigation.navigate("Products", { params: { title } })}
+        onPress={() =>
+          navigation.navigate("ProductNavigator", { initialType: title })
+        }
       >
         <Text style={styles.btnText}>Khám phá</Text>
         <Icon name="arrow-right" size={20} color="white" style={styles.icon} />

@@ -15,7 +15,7 @@ import images from "../assets/images/imageMap";
 export default function DetailProduct({ navigation }) {
   const route = useRoute();
   const { item } = route.params;
-
+  const [isTouched, setIsTouched] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const getImage = (imageName) => {
     return images[imageName];
@@ -26,8 +26,8 @@ export default function DetailProduct({ navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="chevron-left" size={24} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Icon name="heart" size={24} color="#000" />
+        <TouchableOpacity onPress={() => setIsTouched(!isTouched)}>
+          <Icon name="heart" size={24} color={isTouched ? "red" : "#000"} />
         </TouchableOpacity>
       </View>
       <Image source={getImage(item.image)} style={styles.image} />
@@ -81,7 +81,12 @@ export default function DetailProduct({ navigation }) {
                 <Text style={styles.starText}>Bấm để bình chọn</Text>
                 <View style={styles.starIcon}>
                   {[1, 2, 3, 4, 5].map((index) => (
-                    <Icon name="star-o" size={30} color="rgba(0, 0, 0, 0.5)" />
+                    <Icon
+                      key={index}
+                      name="star-o"
+                      size={30}
+                      color="rgba(0, 0, 0, 0.5)"
+                    />
                   ))}
                 </View>
               </View>

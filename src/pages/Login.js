@@ -9,10 +9,14 @@ import {
 import React, { useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { FIREBASE_AUTH } from "../api/firebase";
 
 export default function Login({ navigation }) {
   const [isPasswordVisible, setPasswordVisible] = useState(true);
-
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const auth = FIREBASE_AUTH;
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -32,7 +36,10 @@ export default function Login({ navigation }) {
           entering={FadeInDown.delay(200).duration(1000).springify()}
           style={styles.inputContainer}
         >
-          <TextInput style={styles.input} />
+          <TextInput
+            style={styles.input}
+            onChangeText={(text) => setEmail(text)}
+          />
         </Animated.View>
 
         <Text style={styles.TextInput}>Mật khẩu</Text>
@@ -40,7 +47,11 @@ export default function Login({ navigation }) {
           entering={FadeInDown.delay(400).duration(1000).springify()}
           style={styles.inputContainer}
         >
-          <TextInput style={styles.input} secureTextEntry={isPasswordVisible} />
+          <TextInput
+            style={styles.input}
+            secureTextEntry={isPasswordVisible}
+            onChangeText={(text) => setPassword(text)}
+          />
           <TouchableOpacity
             onPress={() => setPasswordVisible(!isPasswordVisible)}
             style={styles.iconContainer}
