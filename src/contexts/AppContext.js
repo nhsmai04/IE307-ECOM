@@ -52,6 +52,7 @@ const AppProvider = ({ children }) => {
     const existingProductIndex = cart.findIndex(cartItem => {
       return (
         cartItem.itemId === newItem.itemId &&
+        cartItem.name === newItem.name &&
         cartItem.size === newItem.size &&
         cartItem.ice === newItem.ice &&
         cartItem.sweetness === newItem.sweetness &&
@@ -75,6 +76,7 @@ const removeFromCart = (item) => {
     const updatedCart = cart.filter(cartItem => {
       return !(
         cartItem.itemId === item.id &&
+        cartItem.name === item.name &&
         cartItem.size === item.size &&
         cartItem.ice === item.ice &&
         cartItem.sweetness === item.sweetness &&
