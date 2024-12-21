@@ -9,9 +9,26 @@ import {
 import React, { useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Animated, { FadeInDown } from "react-native-reanimated";
-
+import { FIREBASE_AUTH } from "../api/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 export default function Login({ navigation }) {
   const [isPasswordVisible, setPasswordVisible] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const auth = FIREBASE_AUTH;
+
+  const signIn = async () => {
+    try {
+      setLoading(true);
+      await signInWithEmailAndPassword(auth, email, password);
+      setLoading(false);
+      navigation.navigate("BottomNavigator");
+    } catch (error) {
+      alert("Lỗi đăng nhập:", error);
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -32,7 +49,11 @@ export default function Login({ navigation }) {
           entering={FadeInDown.delay(200).duration(1000).springify()}
           style={styles.inputContainer}
         >
-          <TextInput style={styles.input} />
+          <TextInput
+            style={styles.input}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+          />
         </Animated.View>
 
         <Text style={styles.TextInput}>Mật khẩu</Text>
@@ -40,7 +61,12 @@ export default function Login({ navigation }) {
           entering={FadeInDown.delay(400).duration(1000).springify()}
           style={styles.inputContainer}
         >
-          <TextInput style={styles.input} secureTextEntry={isPasswordVisible} />
+          <TextInput
+            style={styles.input}
+            value={password}
+            secureTextEntry={isPasswordVisible}
+            onChangeText={(text) => setPassword(text)}
+          />
           <TouchableOpacity
             onPress={() => setPasswordVisible(!isPasswordVisible)}
             style={styles.iconContainer}
@@ -97,10 +123,12 @@ export default function Login({ navigation }) {
         entering={FadeInDown.delay(1000).duration(1000).springify()}
         style={styles.buttonLogin}
       >
-        <TouchableOpacity
-          onPress={() => navigation.navigate("BottomNavigator")}
-        >
-          <Text style={styles.buttonText}>Đăng nhập</Text>
+        <TouchableOpacity onPress={signIn} disabled={loading}>
+          {loading ? (
+            <Text style={styles.loadingText}>Đang đăng nhập...</Text>
+          ) : (
+            <Text style={styles.buttonText}>Đăng nhập</Text>
+          )}
         </TouchableOpacity>
       </Animated.View>
     </View>
@@ -171,6 +199,11 @@ const styles = StyleSheet.create({
     marginTop: 80,
   },
   buttonText: {
+    color: "#000",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  loadingText: {
     color: "#000",
     fontSize: 18,
     fontWeight: "bold",

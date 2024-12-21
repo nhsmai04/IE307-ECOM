@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { AsyncStorage } from 'react-native';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { AsyncStorage } from "react-native";
 
 // Tạo Context cho cả giỏ hàng và token
 export const AppContext = createContext();
@@ -12,32 +12,32 @@ const AppProvider = ({ children }) => {
   const [cart, setCart] = useState([]); // Lưu danh sách sản phẩm trong giỏ hàng
 
   // Kiểm tra token khi load ứng dụng
-//   useEffect(() => {
-//     const checkToken = async () => {
-//       const savedToken = await AsyncStorage.getItem('token');
-//       if (savedToken) {
-//         setToken(savedToken);
-//       }
-//     };
-//     checkToken();
-//   }, []);
+  //   useEffect(() => {
+  //     const checkToken = async () => {
+  //       const savedToken = await AsyncStorage.getItem('token');
+  //       if (savedToken) {
+  //         setToken(savedToken);
+  //       }
+  //     };
+  //     checkToken();
+  //   }, []);
 
-//   // Đăng nhập và lưu token vào Context và AsyncStorage
-//   const login = async (newToken) => {
-//     setToken(newToken);
-//     await AsyncStorage.setItem('token', newToken);
-//   };
+  //   // Đăng nhập và lưu token vào Context và AsyncStorage
+  //   const login = async (newToken) => {
+  //     setToken(newToken);
+  //     await AsyncStorage.setItem('token', newToken);
+  //   };
 
-//   // Đăng xuất và xóa token
-//   const logout = async () => {
-//     setToken(null);
-//     await AsyncStorage.removeItem('token');
-//   };
+  //   // Đăng xuất và xóa token
+  //   const logout = async () => {
+  //     setToken(null);
+  //     await AsyncStorage.removeItem('token');
+  //   };
 
   // Thêm sản phẩm vào giỏ hàng
   const addToCart = (item) => {
     const newItem = {
-      itemId: item.id,
+      itemId: item.id_drinks,
       name: item.name,
       image: item.image,
       size: item.size,
@@ -48,11 +48,9 @@ const AppProvider = ({ children }) => {
       quantity: 1,
       total: item.total,
     };
-
-    const existingProductIndex = cart.findIndex(cartItem => {
+    const existingProductIndex = cart.findIndex((cartItem) => {
       return (
         cartItem.itemId === newItem.itemId &&
-        cartItem.name === newItem.name &&
         cartItem.size === newItem.size &&
         cartItem.ice === newItem.ice &&
         cartItem.sweetness === newItem.sweetness &&
@@ -63,20 +61,30 @@ const AppProvider = ({ children }) => {
     if (existingProductIndex >= 0) {
       const updatedCart = [...cart];
       updatedCart[existingProductIndex].quantity += 1;
-      updatedCart[existingProductIndex].total = updatedCart[existingProductIndex].quantity * (updatedCart[existingProductIndex].price + updatedCart[existingProductIndex].toppings.reduce((acc, topping) => acc + parseFloat(topping.value), 0));
+      updatedCart[existingProductIndex].total =
+        updatedCart[existingProductIndex].quantity *
+        (parseFloat(updatedCart[existingProductIndex].price) +
+          updatedCart[existingProductIndex].toppings.reduce(
+            (acc, topping) => acc + parseFloat(topping.value),
+            0
+          ));
       setCart(updatedCart);
     } else {
-      newItem.total = newItem.price + newItem.toppings.reduce((acc, topping) => acc + parseFloat(topping.value), 0);
+      newItem.total =
+        parseFloat(newItem.price) +
+        newItem.toppings.reduce(
+          (acc, topping) => acc + (parseFloat(topping.value) || 0),
+          0
+        );
       setCart([...cart, newItem]);
     }
   };
-  
-// Xóa sản phẩm khỏi giỏ hàng
-const removeFromCart = (item) => {
-    const updatedCart = cart.filter(cartItem => {
+
+  // Xóa sản phẩm khỏi giỏ hàng
+  const removeFromCart = (item) => {
+    const updatedCart = cart.filter((cartItem) => {
       return !(
-        cartItem.itemId === item.id &&
-        cartItem.name === item.name &&
+        cartItem.itemId === item.id_drinks &&
         cartItem.size === item.size &&
         cartItem.ice === item.ice &&
         cartItem.sweetness === item.sweetness &&
@@ -88,11 +96,16 @@ const removeFromCart = (item) => {
 
   // Tính tổng tiền giỏ hàng
   const calculateTotal = () => {
-    return cart.reduce((total, product) => total + product.price * product.quantity, 0);
+    return cart.reduce(
+      (total, product) => total + product.price * product.quantity,
+      0
+    );
   };
 
   return (
-    <AppContext.Provider value={{ token, cart, addToCart, calculateTotal,removeFromCart}}>
+    <AppContext.Provider
+      value={{ token, cart, addToCart, calculateTotal, removeFromCart }}
+    >
       {children}
     </AppContext.Provider>
   );

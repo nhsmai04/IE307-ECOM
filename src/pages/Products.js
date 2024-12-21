@@ -7,93 +7,104 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { getProducts } from "../api/firebase"; // Giả sử bạn lưu hàm getProducts ở file firebase.js
+import { getProductsByType } from "../api/firebase";
 import Icon from "react-native-vector-icons/FontAwesome";
 import images from "../assets/images/imageMap";
-
+import { useRoute } from "@react-navigation/native";
 export default function Products({ navigation }) {
-  const [data, setData] = useState([]);
-
+  const [bestNewData, setBestNewData] = useState([]);
+  const [otherData, setOtherData] = useState([]);
+  const route = useRoute();
+  const {type} = route.params || {};
   useEffect(() => {
     const fetchData = async () => {
-      const products = await getProducts();
-      if (products) {
-        setData(Object.values(products)); // Chuyển dữ liệu thành mảng nếu cần
+      try {
+        console.log("type:", type);
+        const products = await getProductsByType(type);
+        // const bestNew = products.filter(
+        //   (product) => product.Cate === "1" || product.Cate === "2"
+        // );
+        // const others = products.filter(
+        //   (product) =>
+        //     !product.Cate || (product.Cate !== "1" && product.Cate !== "2")
+        // );
+        console.log("products:", products);
+        // setBestNewData(bestNew);
+        // setOtherData(others);
+      } catch (error) {
+        console.error("Error fetching products: ", error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [type]);
 
   const getImage = (imageName) => {
     return images[imageName];
   };
 
+  const formatNumber = (number) => {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+  const renderProductItem = ({ item }) => (
+    <View>
+      <TouchableOpacity
+        style={styles.item}
+        onPress={() => navigation.navigate("DetailProduct", { item })}
+      >
+        <View style={styles.imageContainer}>
+          <Image source={getImage(item.image)} style={styles.image} />
+          {item.Cate === "1" && (
+            <View style={styles.tag}>
+              <Text style={styles.tagText}>Bán chạy</Text>
+            </View>
+          )}
+          {item.Cate === "2" && (
+            <View style={styles.tag2}>
+              <Text style={styles.tagText}>Mới</Text>
+            </View>
+          )}
+        </View>
+        <View style={styles.info}>
+          <Text style={styles.name} numberOfLines={1}>
+            
+          </Text>
+          <Text style={styles.priceProduct}>{formatNumber(item.price)} đ</Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.addBtn}>
+        <Icon name="plus-circle" size={24} color="gray" />
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headertitle}>Trà</Text>
+        <Text style={styles.headertitle}>{type.toUpperCase()}</Text>
       </View>
 
       <View>
-        <Text style={styles.title}>BEST SELLER / NEW</Text>
+        <Text style={styles.title}>BÁN CHẠY / MỚI</Text>
       </View>
 
       <FlatList
-        data={data}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => navigation.navigate("DetailProduct", { item })}
-          >
-            <View style={styles.item}>
-              <View style={styles.imageContainer}>
-                <Image source={getImage(item.image)} style={styles.image} />
-              </View>
-              <View style={styles.info}>
-                <Text style={styles.name} numberOfLines={1}>
-                  {item.name}
-                </Text>
-                <Text style={styles.priceProduct}>{item.price} đ</Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.addBtn}>
-              <Icon name="plus-circle" size={30} color="#000" />
-            </TouchableOpacity>
-          </TouchableOpacity>
-        )}
+        data={bestNewData}
+        renderItem={renderProductItem}
         horizontal
         contentContainerStyle={{ columnGap: 10 }}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.name}
       />
 
       <View>
-        <Text style={styles.title2}>DRINK</Text>
+        <Text style={styles.title2}>NƯỚC UỐNG</Text>
       </View>
       <FlatList
-        data={data}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => navigation.navigate("DetailProduct", { item })}
-          >
-            <View style={styles.item}>
-              <View style={styles.imageContainer}>
-                <Image source={getImage(item.image)} style={styles.image} />
-              </View>
-              <View style={styles.info}>
-                <Text style={styles.name} numberOfLines={1}>
-                  {item.name}
-                </Text>
-                <Text style={styles.priceProduct}>{item.price} đ</Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.addBtn}>
-              <Icon name="plus-circle" size={30} color="#000" />
-            </TouchableOpacity>
-          </TouchableOpacity>
-        )}
+        data={otherData}
+        renderItem={renderProductItem}
         horizontal
         contentContainerStyle={{ columnGap: 10 }}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.name}
       />
     </View>
   );
@@ -102,7 +113,8 @@ export default function Products({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 5,
+    backgroundColor: "#fff",
   },
   header: {
     flexDirection: "row",
@@ -121,7 +133,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontFamily: "Lato-Bold",
+    fontWeight: "bold",
     marginBottom: 20,
     color: "red",
     paddingBottom: 10,
@@ -129,7 +141,7 @@ const styles = StyleSheet.create({
   },
   title2: {
     fontSize: 20,
-    fontFamily: "Lato-Bold",
+    fontWeight: "bold",
     marginBottom: 20,
     color: "red",
     paddingBottom: 10,
@@ -141,7 +153,7 @@ const styles = StyleSheet.create({
     height: 240,
     marginEnd: 22,
     borderRadius: 10,
-    backgroundColor: "rgba(134,204,174,0.2)",
+    backgroundColor: "rgba(162, 231, 242, 0.3)",
   },
   imageContainer: {
     flex: 1,
@@ -156,28 +168,50 @@ const styles = StyleSheet.create({
     height: "100%",
     resizeMode: "cover",
   },
+  tag: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    backgroundColor: "rgba(255, 0, 0, 0.7)",
+    paddingVertical: 2,
+    paddingHorizontal: 5,
+    borderRadius: 3,
+  },
+  tagText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  tag2: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    backgroundColor: "rgba(27, 117, 186, 0.7)",
+    paddingVertical: 2,
+    paddingHorizontal: 5,
+    borderRadius: 3,
+  },
   info: {
     paddingLeft: 10,
   },
   name: {
     fontWeight: "bold",
     fontSize: 18,
-    marginBottom: 15,
-    paddingLeft: 5,
+    marginBottom: 5,
+    marginTop: 10,
     color: "#333333",
   },
   priceProduct: {
     fontSize: 18,
     fontWeight: "Lato-Regular",
     marginBlock: 5,
-    color: "rgba(0, 0, 0, 0.5)",
+    color: "rgba(0, 0, 0, 1)",
     marginBottom: 10,
-    paddingLeft: 5,
     paddingBottom: 10,
   },
   addBtn: {
     position: "absolute",
-    bottom: 10,
+    bottom: 30,
     right: 40,
     paddingBottom: 5,
   },
