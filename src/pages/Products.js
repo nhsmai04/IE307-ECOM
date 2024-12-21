@@ -40,6 +40,9 @@ export default function Products({ navigation, type }) {
     return images[imageName];
   };
 
+  const formatNumber = (number) => {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
   const renderProductItem = ({ item }) => (
     <View>
       <TouchableOpacity
@@ -63,7 +66,7 @@ export default function Products({ navigation, type }) {
           <Text style={styles.name} numberOfLines={1}>
             {item.name}
           </Text>
-          <Text style={styles.priceProduct}>{item.price} đ</Text>
+          <Text style={styles.priceProduct}>{formatNumber(item.price)} đ</Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity style={styles.addBtn}>

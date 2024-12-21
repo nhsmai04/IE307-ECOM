@@ -3,7 +3,7 @@ import AppNavigator from "./src/navigations/AppNavigator";
 import { useState } from "react";
 import * as Font from "expo-font";
 import AppLoading from "expo-app-loading";
-
+import  AppProvider  from "./src/contexts/AppContext";
 const loadFonts = () => {
   return Font.loadAsync({
     "Lato-Regular": require("./src/assets/fonts/Lato-Regular.ttf"),
@@ -23,9 +23,13 @@ export default function App() {
       />
     );
   }
+  
   return (
-    <NavigationContainer>
-      <AppNavigator />
-    </NavigationContainer>
+    
+     <AppProvider>
+      <NavigationContainer>
+        <AppNavigator />
+      </NavigationContainer>
+    </AppProvider>
   );
 }

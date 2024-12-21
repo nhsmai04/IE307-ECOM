@@ -9,18 +9,32 @@ import {
 import React, { useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Animated, { FadeInDown } from "react-native-reanimated";
-
+import { FIREBASE_AUTH } from "../api/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 export default function Register({ navigation }) {
   const [isPasswordVisible, setPasswordVisible] = useState(true);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleRegister = () => {
+  const auth = FIREBASE_AUTH;
+
+  const handleRegister = async () => {
     if (password !== confirmPassword) {
       alert("Mật khẩu xác nhận không khớp");
       return;
-    } else {
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       alert("Đăng ký thành công");
+      navigation.navigate("Login"); // Điều hướng sang trang đăng nhập
+    } catch (error) {
+      alert("Đăng ký thất bại: " + error.message);
     }
   };
 
@@ -43,7 +57,11 @@ export default function Register({ navigation }) {
           entering={FadeInDown.delay(200).duration(1000).springify()}
           style={styles.inputContainer}
         >
-          <TextInput style={styles.input} />
+          <TextInput
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+          />
         </Animated.View>
 
         <Text style={styles.TextInput}>Mật khẩu</Text>
