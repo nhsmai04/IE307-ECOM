@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  Dimensions,
 } from "react-native";
 import React, { useState, useContext } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -12,6 +13,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { AppContext } from "../contexts/AppContext";
 import { FIREBASE_AUTH } from "../api/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+const { width, height } = Dimensions.get("window");
 export default function Login({ navigation }) {
   const [isPasswordVisible, setPasswordVisible] = useState(true);
   const [email, setEmail] = useState("");
@@ -149,22 +151,22 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    height: 150,
+    height: height * 0.2,
     marginBottom: 30,
     width: "100%",
     backgroundColor: "#12382B",
   },
   logo: {
-    width: 110,
-    height: 110,
+    width: width * 0.3,
+    height: height * 0.15,
     marginTop: 35,
   },
   textHeader: {
-    fontSize: 22,
+    fontSize: width * 0.06,
     fontWeight: "bold",
     marginBottom: 30,
     textAlign: "center",
-    marginHorizontal: 55,
+    marginHorizontal: width * 0.1,
   },
   inputContainer: {
     flexDirection: "row",
@@ -176,7 +178,7 @@ const styles = StyleSheet.create({
   },
   TextInput: {
     color: "#000",
-    fontSize: 16,
+    fontSize: width * 0.04,
     fontWeight: "bold",
     width: "80%",
     marginLeft: 10,
@@ -197,7 +199,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 1,
   },
   buttonLogin: {
-    height: 50,
+    height: height * 0.06,
     width: "50%",
     backgroundColor: "rgba(18, 56, 43, 0.5)",
     alignItems: "center",
@@ -207,16 +209,16 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#000",
-    fontSize: 18,
+    fontSize: width * 0.05,
     fontWeight: "bold",
   },
   loadingText: {
     color: "#000",
-    fontSize: 18,
+    fontSize: width * 0.05,
     fontWeight: "bold",
   },
   orText: {
-    fontSize: 16,
+    fontSize: width * 0.04,
     marginVertical: 15,
     color: "#000",
     fontWeight: "bold",
@@ -234,12 +236,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   signUpText: {
-    fontSize: 16,
+    fontSize: width * 0.04,
     color: "#000",
     fontWeight: "bold",
   },
   signUpLink: {
-    fontSize: 16,
+    fontSize: width * 0.04,
     color: "#EC1C1C",
     fontWeight: "bold",
   },

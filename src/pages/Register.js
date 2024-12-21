@@ -5,20 +5,21 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  Dimensions,
 } from "react-native";
 import React, { useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { FIREBASE_AUTH } from "../api/firebase";
+import { FIREBASE_AUTH, addUserToFirestore } from "../api/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+const { width, height } = Dimensions.get("window");
 export default function Register({ navigation }) {
   const [isPasswordVisible, setPasswordVisible] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const auth = FIREBASE_AUTH;
-
   const handleRegister = async () => {
     if (password !== confirmPassword) {
       alert("Mật khẩu xác nhận không khớp");
@@ -26,14 +27,26 @@ export default function Register({ navigation }) {
     }
 
     try {
+      setLoading(true);
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
+      const { uid } = userCredential.user;
+
+      // Tạo thông tin người dùng trong Firestore
+      await addUserToFirestore(uid, {
+        email,
+        username: email.split("@")[0], // Đặt tên người dùng là phần trước '@'
+        cart: [], // Giỏ hàng rỗng
+        orderHistory: [], // Lịch sử đặt hàng rỗng
+      });
       alert("Đăng ký thành công");
       navigation.navigate("Login"); // Điều hướng sang trang đăng nhập
+      setLoading(false);
     } catch (error) {
+      console.log(error);
       alert("Đăng ký thất bại: " + error.message);
     }
   };
@@ -127,8 +140,12 @@ export default function Register({ navigation }) {
         entering={FadeInDown.delay(1000).duration(1000).springify()}
         style={styles.buttonLogin}
       >
-        <TouchableOpacity onPress={handleRegister}>
-          <Text style={styles.buttonText}>Đăng ký</Text>
+        <TouchableOpacity onPress={handleRegister} disabled={loading}>
+          {loading ? (
+            <Text style={styles.loadingText}>Đang xử lý...</Text>
+          ) : (
+            <Text style={styles.buttonText}>Đăng ký</Text>
+          )}
         </TouchableOpacity>
       </Animated.View>
     </View>
@@ -144,20 +161,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 150,
     marginBottom: 30,
-    width: "100%",
+    width: width,
     backgroundColor: "#12382B",
   },
   logo: {
-    width: 110,
-    height: 110,
+    width: width * 0.3,
+    height: height * 0.125,
     marginTop: 35,
   },
   textHeader: {
-    fontSize: 22,
+    fontSize: width * 0.06,
     fontWeight: "bold",
     marginBottom: 30,
     textAlign: "center",
-    marginHorizontal: 55,
+    marginHorizontal: width * 0.1,
   },
   inputContainer: {
     flexDirection: "row",
@@ -169,7 +186,7 @@ const styles = StyleSheet.create({
   },
   TextInput: {
     color: "#000",
-    fontSize: 16,
+    fontSize: width * 0.04,
     fontWeight: "bold",
     width: "80%",
     marginLeft: 10,
@@ -181,7 +198,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   buttonLogin: {
-    height: 50,
+    height: height * 0.06,
     width: "50%",
     backgroundColor: "rgba(18, 56, 43, 0.5)",
     alignItems: "center",
@@ -191,17 +208,22 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#000",
-    fontSize: 18,
+    fontSize: width * 0.05,
+    fontWeight: "bold",
+  },
+  loadingText: {
+    color: "#000",
+    fontSize: width * 0.05,
     fontWeight: "bold",
   },
   signUpText: {
-    fontSize: 16,
+    fontSize: width * 0.04,
     color: "#000",
     fontWeight: "bold",
     left: 10,
   },
   signUpLink: {
-    fontSize: 16,
+    fontSize: width * 0.04,
     color: "#EC1C1C",
     fontWeight: "bold",
   },

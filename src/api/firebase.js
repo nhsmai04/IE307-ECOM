@@ -1,11 +1,17 @@
 // Firebase SDK v9+ (modular SDK)
 import { initializeApp } from "firebase/app";
-import { getDatabase } from "firebase/database";
-import { ref, get } from "firebase/database";
+import { getDatabase, ref, get } from "firebase/database";
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDoc,
+  setDoc,
+  doc,
+} from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// Your web app's Firebase configuration
+
+// Cấu hình Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAc2ShExyCYd0lcNtW4cNcwTVqH_W0i9vM",
   authDomain: "ie307-solitea.firebaseapp.com",
@@ -18,59 +24,50 @@ const firebaseConfig = {
 
 // Khởi tạo Firebase App
 const app = initializeApp(firebaseConfig);
+
+// Tạo database instance
 const databaseURL =
   "https://ie307-solitea-default-rtdb.asia-southeast1.firebasedatabase.app/";
-// Lấy database instance
-const db = getDatabase(app, databaseURL);
+export const db = getDatabase(app, databaseURL);
 
-// Hàm lấy dữ liệu từ database
-export const getProducts = async () => {
-  try {
-    // Tạo tham chiếu tới database
-    const productsRef = ref(db, "2/product");
+// Tạo Firestore instance
+export const FIREBASE_FIRESTORE = getFirestore(app);
 
-    // Lấy dữ liệu từ database
-    const snapshot = await get(productsRef);
-
-    // Kiểm tra nếu có dữ liệu
-    if (snapshot.exists()) {
-      return snapshot.val(); // Trả về dữ liệu từ database
-    } else {
-      console.log("Không có dữ liệu.");
-      return null;
-    }
-  } catch (error) {
-    console.error("Lỗi khi lấy dữ liệu:", error);
-    return null;
-  }
-};
-export const getProductsByType = async (type) => {
-  try {
-    // Tạo tham chiếu tới database (2/product)
-    const productsRef = ref(db, "2/product");
-
-    // Lấy toàn bộ dữ liệu sản phẩm
-    const snapshot = await get(productsRef);
-
-    if (snapshot.exists()) {
-      const allProducts = snapshot.val(); // Trả về đối tượng các sản phẩm
-      const products = Object.values(allProducts); // Chuyển thành mảng
-
-      // Lọc sản phẩm theo type
-      const filteredProducts = products.filter(
-        (product) => product.type === type
-      );
-      return filteredProducts;
-    } else {
-      console.log("Không có dữ liệu.");
-      return [];
-    }
-  } catch (error) {
-    console.error("Lỗi khi lấy dữ liệu theo type:", error);
-    return [];
-  }
-};
-
+// Tạo Auth instance với React Native persistence
 export const FIREBASE_AUTH = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage),
 });
+
+// Hàm thêm dữ liệu người dùng vào Firestore
+export const addUserToFirestore = async (uid, userData) => {
+  try {
+    const userDocRef = doc(FIREBASE_FIRESTORE, "users", uid);
+
+    // Thêm hoặc ghi đè dữ liệu người dùng
+    await setDoc(userDocRef, userData, { merge: true });
+
+    console.log("Người dùng đã được thêm vào Firestore");
+  } catch (error) {
+    console.error("Lỗi khi thêm người dùng vào Firestore:", error);
+  }
+};
+
+// Hàm lấy thông tin người dùng từ Firestore
+export const getUserFromFirestore = async (uid) => {
+  try {
+    const userDocRef = doc(FIREBASE_FIRESTORE, "users", uid);
+
+    // Lấy dữ liệu từ Firestore
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      return userDoc.data();
+    } else {
+      console.log("Không tìm thấy thông tin người dùng.");
+      return null;
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin người dùng từ Firestore:", error);
+    return null;
+  }
+};
