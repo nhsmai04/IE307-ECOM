@@ -3,11 +3,10 @@ import { createStackNavigator } from "@react-navigation/stack";
 import BottomNavigator from "./BottomNavigator";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import {AppProvider} from '../contexts/AppContext';
 const Stack = createStackNavigator();
-export default function Tabnavigator() {
+export default function Tabnavigator({ initialRouteName }) {
   return (
-    <Stack.Navigator initialRouteName="Login">
+    <Stack.Navigator initialRouteName={initialRouteName}>
       <Stack.Screen
         name="Login"
         component={Login}

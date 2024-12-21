@@ -53,12 +53,12 @@ export default function Products({ navigation, type }) {
           <Image source={getImage(item.image)} style={styles.image} />
           {item.Cate === "1" && (
             <View style={styles.tag}>
-              <Text style={styles.tagText}>Best Seller</Text>
+              <Text style={styles.tagText}>Bán chạy</Text>
             </View>
           )}
           {item.Cate === "2" && (
             <View style={styles.tag2}>
-              <Text style={styles.tagText}>New</Text>
+              <Text style={styles.tagText}>Mới</Text>
             </View>
           )}
         </View>
@@ -70,7 +70,7 @@ export default function Products({ navigation, type }) {
         </View>
       </TouchableOpacity>
       <TouchableOpacity style={styles.addBtn}>
-        <Icon name="plus-circle" size={30} color="#000" />
+        <Icon name="plus-circle" size={24} color="gray" />
       </TouchableOpacity>
     </View>
   );
@@ -82,7 +82,7 @@ export default function Products({ navigation, type }) {
       </View>
 
       <View>
-        <Text style={styles.title}>BEST SELLER / NEW</Text>
+        <Text style={styles.title}>BÁN CHẠY / MỚI</Text>
       </View>
 
       <FlatList
@@ -94,7 +94,7 @@ export default function Products({ navigation, type }) {
       />
 
       <View>
-        <Text style={styles.title2}>DRINK</Text>
+        <Text style={styles.title2}>NƯỚC UỐNG</Text>
       </View>
       <FlatList
         data={otherData}
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontFamily: "Lato-Bold",
+    fontWeight: "bold",
     marginBottom: 20,
     color: "red",
     paddingBottom: 10,
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   },
   title2: {
     fontSize: 20,
-    fontFamily: "Lato-Bold",
+    fontWeight: "bold",
     marginBottom: 20,
     color: "red",
     paddingBottom: 10,
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     height: 240,
     marginEnd: 22,
     borderRadius: 10,
-    backgroundColor: "rgba(134,204,174,0.2)",
+    backgroundColor: "rgba(162, 231, 242, 0.3)",
   },
   imageContainer: {
     flex: 1,
@@ -194,17 +194,16 @@ const styles = StyleSheet.create({
   name: {
     fontWeight: "bold",
     fontSize: 18,
-    marginBottom: 15,
-    paddingLeft: 5,
+    marginBottom: 5,
+    marginTop: 10,
     color: "#333333",
   },
   priceProduct: {
     fontSize: 18,
     fontWeight: "Lato-Regular",
     marginBlock: 5,
-    color: "rgba(0, 0, 0, 0.5)",
+    color: "rgba(0, 0, 0, 1)",
     marginBottom: 10,
-    paddingLeft: 5,
     paddingBottom: 10,
   },
   addBtn: {

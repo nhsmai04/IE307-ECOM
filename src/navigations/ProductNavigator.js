@@ -15,7 +15,6 @@ export default function ProductNavigator({ navigation }) {
     Fresh: "Fresh",
   };
   const initialRouteName = mapTypeToRouteName[initialType];
-  console.log(initialRouteName);
   return (
     <Tab.Navigator
       initialRouteName={initialRouteName}
@@ -25,6 +24,7 @@ export default function ProductNavigator({ navigation }) {
         gestureEnabled: false,
       }}
     >
+      {console.log(initialType)}
       <Tab.Screen name="Trà">
         {() => <Products type="Tra" navigation={navigation} />}
       </Tab.Screen>

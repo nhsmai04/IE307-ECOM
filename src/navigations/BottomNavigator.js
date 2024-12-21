@@ -12,9 +12,9 @@ export default function BottomNavigator() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-          if (route.name === "Home") {
+          if (route.name === "Trang chủ") {
             iconName = focused ? "home" : "home-outline";
-          } else if (route.name === "Profile") {
+          } else if (route.name === "Tài khoản") {
             iconName = focused ? "person" : "person-outline";
           } else {
             iconName = focused ? "cart" : "cart-outline";
@@ -24,12 +24,12 @@ export default function BottomNavigator() {
       })}
     >
       <Tab.Screen
-        name="Home"
+        name="Trang chủ"
         component={Homestack}
         options={{ headerShown: false }}
       />
-      <Tab.Screen name="Shop" component={Shopstack} />
-      <Tab.Screen name="Profile" component={Profilestack} />
+      <Tab.Screen name="Giỏ hàng" component={Shopstack} />
+      <Tab.Screen name="Tài khoản" component={Profilestack} />
     </Tab.Navigator>
   );
 }

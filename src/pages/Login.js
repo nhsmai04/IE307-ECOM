@@ -6,9 +6,10 @@ import {
   Image,
   TextInput,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { AppContext } from "../contexts/AppContext";
 import { FIREBASE_AUTH } from "../api/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 export default function Login({ navigation }) {
@@ -16,17 +17,23 @@ export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const auth = FIREBASE_AUTH;
-
-  const signIn = async () => {
+  const { login } = useContext(AppContext);
+  const handleLogin = async () => {
     try {
       setLoading(true);
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        FIREBASE_AUTH,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Lưu token vào context và AsyncStorage
+      login(user.uid);
+      navigation.navigate("BottomNavigator"); // Chuyển hướng tới trang chính
       setLoading(false);
-      navigation.navigate("BottomNavigator");
     } catch (error) {
-      alert("Lỗi đăng nhập:", error);
-      setLoading(false);
+      console.log("Error logging in: ", error);
     }
   };
 
@@ -123,7 +130,7 @@ export default function Login({ navigation }) {
         entering={FadeInDown.delay(1000).duration(1000).springify()}
         style={styles.buttonLogin}
       >
-        <TouchableOpacity onPress={signIn} disabled={loading}>
+        <TouchableOpacity onPress={handleLogin} disabled={loading}>
           {loading ? (
             <Text style={styles.loadingText}>Đang đăng nhập...</Text>
           ) : (

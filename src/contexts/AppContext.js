@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { AsyncStorage } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Tạo Context cho cả giỏ hàng và token
 export const AppContext = createContext();
@@ -12,27 +12,36 @@ const AppProvider = ({ children }) => {
   const [cart, setCart] = useState([]); // Lưu danh sách sản phẩm trong giỏ hàng
 
   // Kiểm tra token khi load ứng dụng
-  //   useEffect(() => {
-  //     const checkToken = async () => {
-  //       const savedToken = await AsyncStorage.getItem('token');
-  //       if (savedToken) {
-  //         setToken(savedToken);
-  //       }
-  //     };
-  //     checkToken();
-  //   }, []);
+  useEffect(() => {
+    const checkTokenAndCart = async () => {
+      const savedToken = await AsyncStorage.getItem("token");
+      const savedCart = await AsyncStorage.getItem("cart");
 
-  //   // Đăng nhập và lưu token vào Context và AsyncStorage
-  //   const login = async (newToken) => {
-  //     setToken(newToken);
-  //     await AsyncStorage.setItem('token', newToken);
-  //   };
+      // Nếu có token, cập nhật token vào context
+      if (savedToken) {
+        setToken(savedToken);
+      }
 
-  //   // Đăng xuất và xóa token
-  //   const logout = async () => {
-  //     setToken(null);
-  //     await AsyncStorage.removeItem('token');
-  //   };
+      // Nếu có giỏ hàng, cập nhật giỏ hàng vào context
+      if (savedCart) {
+        setCart(JSON.parse(savedCart));
+      }
+    };
+
+    checkTokenAndCart();
+  }, []);
+
+  // Đăng nhập và lưu token vào Context và AsyncStorage
+  const login = async (newToken) => {
+    setToken(newToken);
+    await AsyncStorage.setItem("token", newToken); // Lưu token vào AsyncStorage
+  };
+
+  // Đăng xuất và xóa token
+  const logout = async () => {
+    setToken(null);
+    await AsyncStorage.removeItem("token"); // Xóa token khỏi AsyncStorage
+  };
 
   // Thêm sản phẩm vào giỏ hàng
   const addToCart = (item) => {
@@ -48,6 +57,7 @@ const AppProvider = ({ children }) => {
       quantity: 1,
       total: item.total,
     };
+
     const existingProductIndex = cart.findIndex((cartItem) => {
       return (
         cartItem.itemId === newItem.itemId &&
@@ -69,6 +79,7 @@ const AppProvider = ({ children }) => {
             0
           ));
       setCart(updatedCart);
+      AsyncStorage.setItem("cart", JSON.stringify(updatedCart)); // Cập nhật giỏ hàng vào AsyncStorage
     } else {
       newItem.total =
         parseFloat(newItem.price) +
@@ -76,7 +87,9 @@ const AppProvider = ({ children }) => {
           (acc, topping) => acc + (parseFloat(topping.value) || 0),
           0
         );
-      setCart([...cart, newItem]);
+      const updatedCart = [...cart, newItem];
+      setCart(updatedCart);
+      AsyncStorage.setItem("cart", JSON.stringify(updatedCart)); // Lưu giỏ hàng vào AsyncStorage
     }
   };
 
@@ -92,6 +105,7 @@ const AppProvider = ({ children }) => {
       );
     });
     setCart(updatedCart);
+    AsyncStorage.setItem("cart", JSON.stringify(updatedCart)); // Cập nhật giỏ hàng vào AsyncStorage
   };
 
   // Tính tổng tiền giỏ hàng
@@ -104,7 +118,15 @@ const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider
-      value={{ token, cart, addToCart, calculateTotal, removeFromCart }}
+      value={{
+        token,
+        cart,
+        addToCart,
+        removeFromCart,
+        calculateTotal,
+        login,
+        logout,
+      }}
     >
       {children}
     </AppContext.Provider>
