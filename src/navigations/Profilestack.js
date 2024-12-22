@@ -7,11 +7,8 @@ export default function Profilestack({ navigation }) {
 
   const handleLogout = async () => {
     try {
-      // Gọi logout từ AppContext
-      await logout(); // Đảm bảo logout xóa token và giỏ hàng khỏi AsyncStorage
-
-      // Sau khi logout, chuyển hướng về trang login
-      navigation.replace("Login");
+      await logout(); // Xóa token và giỏ hàng khỏi AsyncStorage
+      navigation.replace("Login"); // Chuyển về trang Login
     } catch (err) {
       console.error("Logout error:", err);
     }

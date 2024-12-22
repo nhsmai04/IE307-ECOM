@@ -32,15 +32,39 @@ const AppProvider = ({ children }) => {
   }, []);
 
   // Đăng nhập và lưu token vào Context và AsyncStorage
-  const login = async (newToken) => {
-    setToken(newToken);
-    await AsyncStorage.setItem("token", newToken); // Lưu token vào AsyncStorage
+  const saveCredentials = async (email, password) => {
+    try {
+      const credentials = { email, password };
+      await AsyncStorage.setItem(
+        "userCredentials",
+        JSON.stringify(credentials)
+      );
+    } catch (error) {
+      console.error("Failed to save credentials:", error);
+    }
   };
 
-  // Đăng xuất và xóa token
+  // Tải thông tin đăng nhập
+  const loadCredentials = async () => {
+    try {
+      const storedCredentials = await AsyncStorage.getItem("userCredentials");
+      return storedCredentials ? JSON.parse(storedCredentials) : null;
+    } catch (error) {
+      console.error("Failed to load credentials:", error);
+      return null;
+    }
+  };
+
+  // Đăng nhập
+  const login = async (newToken) => {
+    setToken(newToken);
+    await AsyncStorage.setItem("token", newToken);
+  };
+
+  // Đăng xuất
   const logout = async () => {
     setToken(null);
-    await AsyncStorage.removeItem("token"); // Xóa token khỏi AsyncStorage
+    await AsyncStorage.removeItem("token");
   };
 
   // Thêm sản phẩm vào giỏ hàng
@@ -126,6 +150,8 @@ const AppProvider = ({ children }) => {
         calculateTotal,
         login,
         logout,
+        saveCredentials,
+        loadCredentials,
       }}
     >
       {children}

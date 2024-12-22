@@ -7,7 +7,7 @@ import {
   TextInput,
   Dimensions,
 } from "react-native";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { AppContext } from "../contexts/AppContext";
@@ -19,7 +19,20 @@ export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useContext(AppContext);
+  const { login, saveCredentials, loadCredentials } = useContext(AppContext);
+
+  useEffect(() => {
+    const loadStoredCredentials = async () => {
+      const credentials = await loadCredentials();
+      if (credentials) {
+        setEmail(credentials.email);
+        setPassword(credentials.password);
+      }
+    };
+
+    loadStoredCredentials();
+  }, []);
+
   const handleLogin = async () => {
     try {
       setLoading(true);
@@ -30,12 +43,16 @@ export default function Login({ navigation }) {
       );
       const user = userCredential.user;
 
-      // Lưu token vào context và AsyncStorage
+      // Lưu thông tin đăng nhập qua context
+      await saveCredentials(email, password);
+
+      // Gọi hàm login từ context
       login(user.uid);
-      navigation.navigate("BottomNavigator"); // Chuyển hướng tới trang chính
-      setLoading(false);
+      navigation.navigate("BottomNavigator");
     } catch (error) {
-      console.log("Error logging in: ", error);
+      console.error("Error logging in:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
