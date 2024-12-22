@@ -14,9 +14,10 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { useRoute } from "@react-navigation/native";
 import images from "../assets/images/imageMap";
 import { useApp } from "../contexts/AppContext";
+import { addToCartFB } from "../api/firebase";
 export default function DetailProduct({ navigation }) {
   const route = useRoute();
-  const { addToCart } = useApp();
+  const { addToCart, token } = useApp();
   const { item } = route.params;
   const [isTouched, setIsTouched] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -45,7 +46,6 @@ export default function DetailProduct({ navigation }) {
           0
         ),
     };
-
     // Kiểm tra sản phẩm đã tồn tại trong giỏ hàng hay chưa
     const existingItemIndex = cart.findIndex(
       (cartItem) =>
@@ -67,7 +67,7 @@ export default function DetailProduct({ navigation }) {
 
     setCart(updatedCart);
     addToCart(cartItem);
-
+    addToCartFB(token, cartItem);
     Alert.alert("Đặt hàng thành công", "Sản phẩm đã được thêm vào giỏ hàng!", [
       { text: "OK", onPress: () => console.log("Đặt hàng thành công") },
     ]);

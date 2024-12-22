@@ -23,9 +23,9 @@ const AppProvider = ({ children }) => {
       }
 
       // Nếu có giỏ hàng, cập nhật giỏ hàng vào context
-      if (savedCart) {
+      /*       if (savedCart) {
         setCart(JSON.parse(savedCart));
-      }
+      } */
     };
 
     checkTokenAndCart();
@@ -70,7 +70,7 @@ const AppProvider = ({ children }) => {
   // Thêm sản phẩm vào giỏ hàng
   const addToCart = (item) => {
     const newItem = {
-      itemId: item.id_drinks,
+      itemId: item.id,
       name: item.name,
       image: item.image,
       size: item.size,
@@ -81,7 +81,6 @@ const AppProvider = ({ children }) => {
       quantity: 1,
       total: item.total,
     };
-
     const existingProductIndex = cart.findIndex((cartItem) => {
       return (
         cartItem.itemId === newItem.itemId &&
@@ -91,7 +90,7 @@ const AppProvider = ({ children }) => {
         JSON.stringify(cartItem.toppings) === JSON.stringify(newItem.toppings)
       );
     });
-
+    /*     console.log(existingProductIndex); */
     if (existingProductIndex >= 0) {
       const updatedCart = [...cart];
       updatedCart[existingProductIndex].quantity += 1;
@@ -121,17 +120,17 @@ const AppProvider = ({ children }) => {
   const removeFromCart = (item) => {
     const updatedCart = cart.filter((cartItem) => {
       return !(
-        cartItem.itemId === item.id_drinks &&
+        cartItem.itemId === item.itemId && // Sửa `id` thành `itemId`
         cartItem.size === item.size &&
         cartItem.ice === item.ice &&
         cartItem.sweetness === item.sweetness &&
         JSON.stringify(cartItem.toppings) === JSON.stringify(item.toppings)
       );
     });
+
     setCart(updatedCart);
     AsyncStorage.setItem("cart", JSON.stringify(updatedCart)); // Cập nhật giỏ hàng vào AsyncStorage
   };
-
   // Tính tổng tiền giỏ hàng
   const calculateTotal = () => {
     return cart.reduce(
@@ -139,7 +138,6 @@ const AppProvider = ({ children }) => {
       0
     );
   };
-
   return (
     <AppContext.Provider
       value={{

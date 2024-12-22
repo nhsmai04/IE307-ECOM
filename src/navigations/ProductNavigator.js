@@ -24,7 +24,6 @@ export default function ProductNavigator({ navigation }) {
         gestureEnabled: false,
       }}
     >
-      {console.log(initialType)}
       <Tab.Screen name="Trà">
         {() => <Products type="Tra" navigation={navigation} />}
       </Tab.Screen>
