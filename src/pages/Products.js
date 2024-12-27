@@ -44,7 +44,7 @@ export default function Products({ navigation, type }) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
   const renderProductItem = ({ item }) => (
-    <View>
+    <View position="relative">
       <TouchableOpacity
         style={styles.item}
         onPress={() => navigation.navigate("DetailProduct", { item })}
@@ -70,17 +70,14 @@ export default function Products({ navigation, type }) {
         </View>
       </TouchableOpacity>
       <TouchableOpacity style={styles.addBtn}>
-        <Icon name="plus-circle" size={24} color="gray" />
+        <Icon name="plus-circle" size={26} color="gray" />
       </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headertitle}>{type.toUpperCase()}</Text>
-      </View>
-
+      <View style={styles.header}></View>
       <View>
         <Text style={styles.title}>BÁN CHẠY / MỚI</Text>
       </View>
@@ -114,13 +111,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
     borderWidth: 1,
     marginTop: 50,
     marginBottom: 20,
-    borderColor: "#6BA397",
   },
   headertitle: {
     fontSize: 24,
@@ -134,7 +127,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: "red",
     paddingBottom: 10,
-    borderBottomWidth: 2,
+    paddingLeft: 5,
   },
   title2: {
     fontSize: 20,
@@ -142,7 +135,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: "red",
     paddingBottom: 10,
-    borderBottomWidth: 2,
+    paddingLeft: 5,
     marginTop: 20,
   },
   item: {
@@ -208,7 +201,7 @@ const styles = StyleSheet.create({
   },
   addBtn: {
     position: "absolute",
-    bottom: 30,
+    bottom: 55,
     right: 40,
     paddingBottom: 5,
   },

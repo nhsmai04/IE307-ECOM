@@ -10,7 +10,7 @@ export const useApp = () => useContext(AppContext);
 const AppProvider = ({ children }) => {
   const [token, setToken] = useState(null); // Lưu token của người dùng
   const [cart, setCart] = useState([]); // Lưu danh sách sản phẩm trong giỏ hàng
-
+  const [cartLenght, setCartLenght] = useState(0);
   // Kiểm tra token khi load ứng dụng
   useEffect(() => {
     const checkTokenAndCart = async () => {
@@ -138,11 +138,15 @@ const AppProvider = ({ children }) => {
       0
     );
   };
+  const handleCartLenght = (lenght) => {
+    setCartLenght(lenght);
+  };
   return (
     <AppContext.Provider
       value={{
         token,
         cart,
+        cartLenght,
         addToCart,
         removeFromCart,
         calculateTotal,
@@ -150,6 +154,7 @@ const AppProvider = ({ children }) => {
         logout,
         saveCredentials,
         loadCredentials,
+        handleCartLenght,
       }}
     >
       {children}

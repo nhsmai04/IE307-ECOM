@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    width: "100%",
+    minWidth: "100%",
     height: 100,
     display: "flex",
     flexDirection: "row",
@@ -31,6 +31,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     resizeMode: "contain",
-    borderRadius: 25,
+    borderRadius: 50,
   },
 });

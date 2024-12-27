@@ -5,8 +5,10 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Homestack from "./Homestack";
 import Profilestack from "./Profilestack";
 import Shopstack from "./Shopstack";
+import { useApp } from "../contexts/AppContext";
 const Tab = createBottomTabNavigator();
 export default function BottomNavigator() {
+  const { token, cartLenght } = useApp();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -28,8 +30,20 @@ export default function BottomNavigator() {
         component={Homestack}
         options={{ headerShown: false }}
       />
-      <Tab.Screen name="Giỏ hàng" component={Shopstack} />
-      <Tab.Screen name="Tài khoản" component={Profilestack} />
+      <Tab.Screen
+        name="Giỏ hàng"
+        component={Shopstack}
+        options={{
+          headerShown: false,
+          tabBarBadge: cartLenght > 0 ? cartLenght : null,
+          tabBarBadgeStyle: { backgroundColor: "red", color: "white" },
+        }}
+      />
+      <Tab.Screen
+        name="Tài khoản"
+        component={Profilestack}
+        options={{ headerShown: false }}
+      />
     </Tab.Navigator>
   );
 }

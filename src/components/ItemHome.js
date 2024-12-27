@@ -28,8 +28,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%", // Adjust height as needed
     position: "relative", // Parent for absolute positioning
-    overflow: "hidden",
-    borderRadius: 10, // Optional for rounded corners
+    overflow: "hidden", // Optional for rounded corners
   },
   image: {
     width: "100%",

@@ -27,7 +27,6 @@ export default function DetailProduct({ navigation }) {
   const [selectedSweetness, setSelectedSweetness] = useState("Bình thường");
   const [selectedToppings, setSelectedToppings] = useState([]);
   const [total, setTotal] = useState("");
-  const [cart, setCart] = useState([]);
   const AddItemtoCart = () => {
     const cartItem = {
       id: item.id_drinks,
@@ -46,7 +45,7 @@ export default function DetailProduct({ navigation }) {
           0
         ),
     };
-    // Kiểm tra sản phẩm đã tồn tại trong giỏ hàng hay chưa
+    /* // Kiểm tra sản phẩm đã tồn tại trong giỏ hàng hay chưa
     const existingItemIndex = cart.findIndex(
       (cartItem) =>
         cartItem.id === item.id_drinks &&
@@ -65,7 +64,7 @@ export default function DetailProduct({ navigation }) {
       updatedCart.push(cartItem);
     }
 
-    setCart(updatedCart);
+    setCart(updatedCart); */
     addToCart(cartItem);
     addToCartFB(token, cartItem);
     Alert.alert("Đặt hàng thành công", "Sản phẩm đã được thêm vào giỏ hàng!", [
@@ -97,11 +96,14 @@ export default function DetailProduct({ navigation }) {
 
   useEffect(() => {
     let newTotal = parseFloat(item.price) || 0;
+    if (selectedSize === "M") {
+      newTotal -= 5000;
+    }
     selectedToppings.forEach((topping) => {
       newTotal += parseFloat(topping.value) || 0;
     });
     setTotal(newTotal);
-  }, [selectedToppings, item.price]);
+  }, [selectedSize, selectedToppings, item.price]);
 
   const formatNumber = (number) => {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -136,18 +138,15 @@ export default function DetailProduct({ navigation }) {
         </View>
 
         <View style={styles.descriptionBox}>
-          <TouchableOpacity
-            style={styles.detailsBtn}
-            onPress={() => setDetailsVisible(true)}
-          >
-            <Text style={styles.detailsBtnText}>Thêm chi tiết</Text>
-          </TouchableOpacity>
           <Text style={styles.description}>Giới thiệu:</Text>
           <Text style={styles.desText}>{item.description}</Text>
         </View>
       </View>
 
-      <TouchableOpacity style={styles.orderBtn}>
+      <TouchableOpacity
+        style={styles.orderBtn}
+        onPress={() => setDetailsVisible(true)}
+      >
         <Text style={styles.btnText}>ĐẶT HÀNG</Text>
       </TouchableOpacity>
       {/* Overlay Modal */}
@@ -463,7 +462,6 @@ export default function DetailProduct({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
   },
   upperRow: {
     flexDirection: "row",
