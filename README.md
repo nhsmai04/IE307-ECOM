@@ -26,6 +26,7 @@ Javascript,React Native, FireBase
 
 ## UI
 
+V![image](https://github.com/user-attachments/assets/dec51dd5-aa0e-4b90-93f5-31a3f22eb3ac)
 
 
 
